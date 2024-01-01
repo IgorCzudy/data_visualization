@@ -28,6 +28,7 @@ def get_train_and_test_sets(format, data_dir):
         patient_number = patient_match.group(1)
         data_list = train_lines if int(patient_number) < 17 else test_lines
 
+      # ds = tf.data.experimental.CsvDataset(gz,[float(),]*(FEATURES+1), compression_type="GZIP")
       # df = pd.read_csv(file_path, compression="gzip", header = None)
       # data_list.extend(df.values.tolist())
       with gzip.open(file_path, 'r') as f:

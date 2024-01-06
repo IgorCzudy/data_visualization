@@ -10,7 +10,7 @@ import glob
 import re
 
 ## GET DATA
-def get_train_and_test_sets(format, data_dir):
+def get_train_and_test_sets(format, data_dir, n_patients = 24):
   file_pattern = f"{data_dir}/uc13-chb*-{format}-time-to-seizure*.csv.gz"
   file_paths = glob.glob(file_pattern)
 
@@ -18,15 +18,17 @@ def get_train_and_test_sets(format, data_dir):
   test_lines = []
 
   for file_path in file_paths:
+      patient_match = re.search(r"uc13-chb(\d+)-", file_path)
+      patient_number = patient_match.group(1)
+      if int(patient_number) > n_patients:
+        continue
+
       if "train" in file_path:
         data_list = train_lines
       elif "test" in file_path:
         data_list = test_lines
       else:
-        # Patients < 17 go to train, rest to test
-        patient_match = re.search(r"uc13-chb(\d+)-", file_path)
-        patient_number = patient_match.group(1)
-        data_list = train_lines if int(patient_number) < 17 else test_lines
+        data_list = train_lines if int(patient_number) < n_patients - 7 else test_lines
 
       # ds = tf.data.experimental.CsvDataset(gz,[float(),]*(FEATURES+1), compression_type="GZIP")
       # df = pd.read_csv(file_path, compression="gzip", header = None)

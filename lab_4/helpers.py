@@ -10,6 +10,26 @@ import glob
 import re
 
 ## GET DATA
+def get_one_patient(format, data_dir, patient):
+  file_pattern = f"{data_dir}/uc13-chb{patient}-{format}-time-to-seizure*.csv.gz"
+  file_paths = glob.glob(file_pattern)
+
+  train_lines = []
+  test_lines = []
+
+  for file_path in file_paths:
+      if "train" in file_path:
+        data_list = train_lines
+      elif "test" in file_path:
+        data_list = test_lines
+    
+      with gzip.open(file_path, 'r') as f:
+        data_list += f.readlines()
+        f.close()
+
+  return train_lines, test_lines
+
+
 def get_train_and_test_sets(format, data_dir, n_patients = 24):
   file_pattern = f"{data_dir}/uc13-chb*-{format}-time-to-seizure*.csv.gz"
   file_paths = glob.glob(file_pattern)
